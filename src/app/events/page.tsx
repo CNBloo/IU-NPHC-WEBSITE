@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
-import { EVENTS, type EventType } from "@/data/events";
+import { headers } from "next/headers";
+import { EVENTS } from "@/data/events";
 import { ORGANIZATIONS } from "@/data/organizations";
-import { formatEventDateTime, splitUpcomingAndPast } from "@/lib/dates";
+import { splitUpcomingAndPast } from "@/lib/dates";
+import { EventCard, EVENT_TYPE_LABELS } from "@/components/ui/EventCard";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export const metadata: Metadata = {
   title: "Events | IU National Pan-Hellenic Council",
@@ -9,13 +12,8 @@ export const metadata: Metadata = {
     "Upcoming and past events from the IU National Pan-Hellenic Council and its member organizations.",
 };
 
-const EVENT_TYPE_LABELS: Record<EventType, string> = {
-  intake: "Intake",
-  social: "Social",
-  service: "Service",
-  educational: "Educational",
-  philanthropy: "Philanthropy",
-};
+const orgName = (slug: string | null) =>
+  ORGANIZATIONS.find((o) => o.slug === slug)?.orgName ?? null;
 
 export default async function EventsPage({
   searchParams,
@@ -23,6 +21,9 @@ export default async function EventsPage({
   searchParams: Promise<{ org?: string; type?: string }>;
 }) {
   const { org, type } = await searchParams;
+  const filtersActive = Boolean(
+    (org && org !== "all") || (type && type !== "all"),
+  );
 
   const filtered = EVENTS.filter((event) => {
     if (org && org !== "all" && event.orgSlug !== org) return false;
@@ -32,8 +33,33 @@ export default async function EventsPage({
 
   const { upcoming, past } = splitUpcomingAndPast(filtered);
 
+  // Event structured data for search engines — upcoming events only. The
+  // strict CSP applies to every script tag, so this one carries the
+  // per-request nonce issued in src/proxy.ts.
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
+  const eventJsonLd = JSON.stringify(
+    upcoming.map((event) => ({
+      "@context": "https://schema.org",
+      "@type": "Event",
+      name: event.title,
+      startDate: event.startDateTime,
+      location: { "@type": "Place", name: event.location },
+      organizer: {
+        "@type": "Organization",
+        name: orgName(event.orgSlug) ?? "IU National Pan-Hellenic Council",
+      },
+    })),
+  ).replace(/</g, "\\u003c");
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+      {upcoming.length > 0 && (
+        <script
+          type="application/ld+json"
+          nonce={nonce}
+          dangerouslySetInnerHTML={{ __html: eventJsonLd }}
+        />
+      )}
       <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
         Events
       </h1>
@@ -107,30 +133,22 @@ export default async function EventsPage({
       <section className="mt-10">
         <h2 className="text-2xl font-semibold text-foreground">Upcoming</h2>
         {upcoming.length === 0 ? (
-          <p className="mt-4 text-foreground/70">
-            No upcoming events match these filters.
-          </p>
+          <EmptyState
+            message={
+              filtersActive
+                ? "No upcoming events match these filters."
+                : "No upcoming events right now — check back soon."
+            }
+            actionHref={filtersActive ? "/events" : undefined}
+            actionLabel={filtersActive ? "Clear filters" : undefined}
+          />
         ) : (
           <ul className="mt-4 space-y-4">
-            {upcoming.map((event) => {
-              const eventOrg = ORGANIZATIONS.find((o) => o.slug === event.orgSlug);
-              return (
-                <li
-                  key={event.slug}
-                  className="rounded-lg border border-black/10 bg-surface p-6 text-surface-foreground shadow-sm"
-                >
-                  <div className="flex flex-wrap items-center gap-2 text-xs font-medium uppercase tracking-wide text-brand">
-                    <span>{EVENT_TYPE_LABELS[event.eventType]}</span>
-                    <span aria-hidden="true">&middot;</span>
-                    <span>{eventOrg ? eventOrg.orgName : "Council-wide"}</span>
-                  </div>
-                  <h3 className="mt-1 text-lg font-semibold">{event.title}</h3>
-                  <p className="mt-1 text-sm text-surface-foreground/70">
-                    {formatEventDateTime(event.startDateTime)} &middot; {event.location}
-                  </p>
-                </li>
-              );
-            })}
+            {upcoming.map((event) => (
+              <li key={event.slug}>
+                <EventCard event={event} orgName={orgName(event.orgSlug)} />
+              </li>
+            ))}
           </ul>
         )}
       </section>
@@ -138,35 +156,26 @@ export default async function EventsPage({
       <section className="mt-10">
         <h2 className="text-2xl font-semibold text-foreground">Past Events</h2>
         {past.length === 0 ? (
-          <p className="mt-4 text-foreground/70">
-            No past events match these filters.
-          </p>
+          <EmptyState
+            message={
+              filtersActive
+                ? "No past events match these filters."
+                : "No past events yet."
+            }
+            actionHref={filtersActive ? "/events" : undefined}
+            actionLabel={filtersActive ? "Clear filters" : undefined}
+          />
         ) : (
           <ul className="mt-4 space-y-4">
-            {past.map((event) => {
-              const eventOrg = ORGANIZATIONS.find((o) => o.slug === event.orgSlug);
-              return (
-                <li
-                  key={event.slug}
-                  className="rounded-lg border border-black/10 bg-surface p-6 text-surface-foreground/80 shadow-sm"
-                >
-                  <div className="flex flex-wrap items-center gap-2 text-xs font-medium uppercase tracking-wide text-surface-foreground/50">
-                    <span>{EVENT_TYPE_LABELS[event.eventType]}</span>
-                    <span aria-hidden="true">&middot;</span>
-                    <span>{eventOrg ? eventOrg.orgName : "Council-wide"}</span>
-                  </div>
-                  <h3 className="mt-1 text-lg font-semibold text-surface-foreground">
-                    {event.title}
-                  </h3>
-                  <p className="mt-1 text-sm text-surface-foreground/60">
-                    {formatEventDateTime(event.startDateTime)} &middot; {event.location}
-                  </p>
-                  <p className="mt-2 text-sm italic text-surface-foreground/50">
-                    Photo gallery coming soon.
-                  </p>
-                </li>
-              );
-            })}
+            {past.map((event) => (
+              <li key={event.slug}>
+                <EventCard
+                  event={event}
+                  orgName={orgName(event.orgSlug)}
+                  past
+                />
+              </li>
+            ))}
           </ul>
         )}
       </section>
