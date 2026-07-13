@@ -1,27 +1,20 @@
 import { ButtonLink } from "@/components/ui/Button";
 import { EventCard } from "@/components/ui/EventCard";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { HeroCarousel } from "@/components/home/HeroCarousel";
+import { EVENTS } from "@/data/events";
+import { ORGANIZATIONS } from "@/data/organizations";
+import { splitUpcomingAndPast } from "@/lib/dates";
 
-// Placeholder events until Phase 2 wires this section up to Sanity.
-const UPCOMING_EVENTS = [
-  {
-    title: "General Body Meeting",
-    date: "Date TBD",
-    location: "Location TBD",
-  },
-  {
-    title: "Chapter Meet & Greet",
-    date: "Date TBD",
-    location: "Location TBD",
-  },
-  {
-    title: "Community Service Day",
-    date: "Date TBD",
-    location: "Location TBD",
-  },
-];
+// The upcoming split depends on the current time, so a purely static home
+// page would freeze it at build time; hourly revalidation keeps it honest
+// without giving up static serving.
+export const revalidate = 3600;
 
 export default function Home() {
+  const { upcoming } = splitUpcomingAndPast(EVENTS);
+  const nextThree = upcoming.slice(0, 3);
+
   return (
     <div className="flex flex-col">
       <HeroCarousel className="h-[70vh] min-h-[560px]">
@@ -61,11 +54,26 @@ export default function Home() {
           <h2 className="text-2xl font-semibold text-surface-foreground">
             Upcoming Events
           </h2>
-          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {UPCOMING_EVENTS.map((event) => (
-              <EventCard key={event.title} {...event} />
-            ))}
-          </div>
+          {nextThree.length === 0 ? (
+            <EmptyState
+              message="No upcoming events right now — check back soon."
+              actionHref="/events"
+              actionLabel="See past events"
+            />
+          ) : (
+            <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {nextThree.map((event) => (
+                <EventCard
+                  key={event.slug}
+                  event={event}
+                  orgName={
+                    ORGANIZATIONS.find((o) => o.slug === event.orgSlug)
+                      ?.orgName ?? null
+                  }
+                />
+              ))}
+            </div>
+          )}
           <div className="mt-8">
             <ButtonLink href="/events">See All Events</ButtonLink>
           </div>
