@@ -24,6 +24,8 @@ export const organization = defineType({
       title: "Slug",
       type: "slug",
       options: { source: "name" },
+      description:
+        "Sets the page URL (/organizations/<slug>). Avoid changing it after launch — old links and search results will break.",
       validation: (rule) => rule.required(),
     }),
     defineField({
@@ -126,12 +128,29 @@ export const organization = defineType({
           type: "object",
           name: "socialLink",
           fields: [
-            defineField({ name: "platform", type: "string", title: "Platform" }),
+            defineField({
+              name: "platform",
+              type: "string",
+              title: "Platform",
+              options: {
+                list: [
+                  "Instagram",
+                  "X (Twitter)",
+                  "Facebook",
+                  "TikTok",
+                  "LinkedIn",
+                  "YouTube",
+                  "Website",
+                ],
+              },
+              validation: (rule) => rule.required(),
+            }),
             defineField({
               name: "url",
               type: "url",
               title: "URL",
-              validation: (rule) => rule.uri({ scheme: ["http", "https"] }),
+              validation: (rule) =>
+                rule.required().uri({ scheme: ["https"] }),
             }),
           ],
         },

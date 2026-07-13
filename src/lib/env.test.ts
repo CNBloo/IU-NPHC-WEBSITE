@@ -43,8 +43,9 @@ describe("getSanityEnv", () => {
   });
 
   it("applies dataset and API version defaults when unset", async () => {
-    const { NEXT_PUBLIC_SANITY_DATASET: _d, SANITY_API_VERSION: _v, ...rest } =
-      SANITY_VARS;
+    const rest: Record<string, string> = { ...SANITY_VARS };
+    delete rest.NEXT_PUBLIC_SANITY_DATASET;
+    delete rest.SANITY_API_VERSION;
     const { getSanityEnv } = await freshEnvModule(rest);
     const env = getSanityEnv();
     expect(env.NEXT_PUBLIC_SANITY_DATASET).toBe("production");
