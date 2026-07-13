@@ -17,7 +17,7 @@ export type PlaceholderEvent = {
   title: string;
   orgSlug: string | null; // null = council-wide
   eventType: EventType;
-  startDateTime: string; // ISO 8601
+  startDateTime: string; // ISO 8601 with explicit Bloomington offset (-04:00 EDT / -05:00 EST)
   location: string;
 };
 
@@ -27,7 +27,7 @@ export const EVENTS: PlaceholderEvent[] = [
     title: "Fall Kickoff Interest Meeting",
     orgSlug: null,
     eventType: "educational",
-    startDateTime: "2026-08-25T18:00:00-05:00",
+    startDateTime: "2026-08-25T18:00:00-04:00",
     location: "Neal-Marshall Black Culture Center",
   },
   {
@@ -35,7 +35,7 @@ export const EVENTS: PlaceholderEvent[] = [
     title: "Step Show Showcase",
     orgSlug: "omega-psi-phi",
     eventType: "social",
-    startDateTime: "2026-09-12T19:00:00-05:00",
+    startDateTime: "2026-09-12T19:00:00-04:00",
     location: "IU Auditorium",
   },
   {
@@ -43,7 +43,7 @@ export const EVENTS: PlaceholderEvent[] = [
     title: "Community Service Day",
     orgSlug: null,
     eventType: "service",
-    startDateTime: "2026-07-19T10:00:00-05:00",
+    startDateTime: "2026-07-19T10:00:00-04:00",
     location: "Bloomington Community Farmers' Market",
   },
   {
@@ -51,7 +51,7 @@ export const EVENTS: PlaceholderEvent[] = [
     title: "Spring Step Show",
     orgSlug: "alpha-phi-alpha",
     eventType: "social",
-    startDateTime: "2026-04-10T19:00:00-05:00",
+    startDateTime: "2026-04-10T19:00:00-04:00",
     location: "IU Auditorium",
   },
   {
