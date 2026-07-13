@@ -18,6 +18,12 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  images: {
+    remotePatterns: [
+      // Sanity-hosted images (org logos, event flyers, hero photos)
+      { protocol: "https", hostname: "cdn.sanity.io", pathname: "/images/**" },
+    ],
+  },
   async headers() {
     return [
       {
