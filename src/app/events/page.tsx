@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { EVENTS, type EventType } from "@/data/events";
 import { ORGANIZATIONS } from "@/data/organizations";
+import { formatEventDateTime, splitUpcomingAndPast } from "@/lib/dates";
 
 export const metadata: Metadata = {
   title: "Events | IU National Pan-Hellenic Council",
@@ -15,27 +16,6 @@ const EVENT_TYPE_LABELS: Record<EventType, string> = {
   educational: "Educational",
   philanthropy: "Philanthropy",
 };
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleString("en-US", {
-    dateStyle: "long",
-    timeStyle: "short",
-  });
-}
-
-// Pulled out of the component body: reading the current time is inherently
-// impure, and React's purity rules flag that inside a component/hook. A
-// plain helper function isn't subject to that rule.
-function splitUpcomingAndPast(events: typeof EVENTS) {
-  const now = Date.now();
-  const upcoming = events
-    .filter((e) => new Date(e.startDateTime).getTime() >= now)
-    .sort((a, b) => a.startDateTime.localeCompare(b.startDateTime));
-  const past = events
-    .filter((e) => new Date(e.startDateTime).getTime() < now)
-    .sort((a, b) => b.startDateTime.localeCompare(a.startDateTime));
-  return { upcoming, past };
-}
 
 export default async function EventsPage({
   searchParams,
@@ -146,7 +126,7 @@ export default async function EventsPage({
                   </div>
                   <h3 className="mt-1 text-lg font-semibold">{event.title}</h3>
                   <p className="mt-1 text-sm text-surface-foreground/70">
-                    {formatDate(event.startDateTime)} &middot; {event.location}
+                    {formatEventDateTime(event.startDateTime)} &middot; {event.location}
                   </p>
                 </li>
               );
@@ -179,7 +159,7 @@ export default async function EventsPage({
                     {event.title}
                   </h3>
                   <p className="mt-1 text-sm text-surface-foreground/60">
-                    {formatDate(event.startDateTime)} &middot; {event.location}
+                    {formatEventDateTime(event.startDateTime)} &middot; {event.location}
                   </p>
                   <p className="mt-2 text-sm italic text-surface-foreground/50">
                     Photo gallery coming soon.
