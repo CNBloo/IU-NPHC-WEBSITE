@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ContactForm } from "@/components/contact/ContactForm";
 
 export const metadata: Metadata = {
@@ -16,9 +17,9 @@ export default function ContactPage() {
         Have a general question for the council? Send us a message below. If
         you&rsquo;re interested in joining a specific organization, reach out
         to that chapter directly from its page on{" "}
-        <a href="/organizations" className="text-brand underline">
+        <Link href="/organizations" className="text-brand underline">
           Member Organizations
-        </a>
+        </Link>
         .
       </p>
 
