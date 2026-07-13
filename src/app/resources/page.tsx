@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { FAQS } from "@/data/faqs";
 
 export const metadata: Metadata = {
@@ -40,13 +41,13 @@ export default function ResourcesPage() {
           Each Divine Nine organization runs its own membership intake process
           independently. If you&rsquo;re interested in a specific organization,
           visit its page on{" "}
-          <a href="/organizations" className="text-brand underline">
+          <Link href="/organizations" className="text-brand underline">
             Member Organizations
-          </a>{" "}
+          </Link>{" "}
           for a link to its official national website, and watch the{" "}
-          <a href="/events" className="text-brand underline">
+          <Link href="/events" className="text-brand underline">
             Events
-          </a>{" "}
+          </Link>{" "}
           page for interest meeting announcements.
         </p>
       </section>

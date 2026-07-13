@@ -1,23 +1,25 @@
-"use client";
-
-import { useState } from "react";
+import Link from "next/link";
 import type { Organization } from "@/data/organizations";
 
+/**
+ * Listing card for an organization — the whole card is one link to the
+ * chapter's detail page, so the listing stays fully server-rendered.
+ */
 export function OrgCard({ org }: { org: Organization }) {
-  const [isOpen, setIsOpen] = useState(false);
   const [primary, secondary] = org.colors;
 
   return (
-    <div
-      className="rounded-lg border border-black/10 bg-surface text-surface-foreground shadow-sm"
-      onMouseEnter={() => setIsOpen(true)}
-      onMouseLeave={() => setIsOpen(false)}
+    <Link
+      href={`/organizations/${org.slug}`}
+      className="block rounded-lg border border-black/10 bg-surface text-surface-foreground shadow-sm transition-shadow hover:shadow-md"
     >
       <div className="overflow-hidden rounded-lg">
         <div
           className="h-2"
           style={{
-            background: `linear-gradient(90deg, ${primary.hex} 50%, ${secondary.hex} 50%)`,
+            background: secondary
+              ? `linear-gradient(90deg, ${primary.hex} 50%, ${secondary.hex} 50%)`
+              : primary.hex,
           }}
           aria-hidden="true"
         />
@@ -63,70 +65,11 @@ export function OrgCard({ org }: { org: Organization }) {
             Founded {org.nationalFounded.date} at {org.nationalFounded.location}
           </p>
 
-          <button
-            type="button"
-            className="mt-4 block text-sm font-medium text-brand underline decoration-dotted underline-offset-2"
-            aria-expanded={isOpen}
-            onClick={() => setIsOpen((open) => !open)}
-            onFocus={() => setIsOpen(true)}
-          >
-            {isOpen ? "Hide chapter details" : "Chapter details"}
-          </button>
-
-          {isOpen ? (
-            <div className="mt-4 space-y-4 border-t border-black/10 pt-4 text-sm">
-              <div>
-                <p className="font-semibold text-surface-foreground">
-                  National Founders
-                </p>
-                <p className="mt-1 max-h-32 overflow-y-auto text-surface-foreground/70">
-                  {org.nationalFounded.founders.join(", ")}
-                </p>
-              </div>
-
-              <div>
-                <p className="font-semibold text-surface-foreground">
-                  {org.chapterDesignation} Chapter at IU
-                </p>
-                {org.iuChartered ? (
-                  <p className="mt-1 text-surface-foreground/70">
-                    Chartered {org.iuChartered.date}.{" "}
-                    {org.iuChartered.note ?? ""}
-                  </p>
-                ) : (
-                  <p className="mt-1 text-surface-foreground/70">
-                    Exact charter date not yet documented on this site &mdash;
-                    chapter officers can add it in Sanity.
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <p className="font-semibold text-surface-foreground">
-                  Colors
-                </p>
-                <ul className="mt-1 text-surface-foreground/70">
-                  {org.colors.map((color) => (
-                    <li key={color.label}>
-                      {color.label} ({color.hex})
-                      {color.source === "approximate" ? " — approximate" : ""}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          ) : null}
-
-          <a
-            href={org.officialSiteUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-4 block text-sm font-medium text-brand hover:underline"
-          >
-            Official national website ↗
-          </a>
+          <p className="mt-4 text-sm font-medium text-brand underline decoration-dotted underline-offset-2">
+            Chapter details
+          </p>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
