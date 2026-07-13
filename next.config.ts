@@ -3,7 +3,8 @@ import type { NextConfig } from "next";
 // Content-Security-Policy is intentionally NOT set here. Next.js injects
 // inline hydration scripts on every page, so a static script-src (even
 // 'self') blocks React from ever hydrating client components — CSP is set
-// per-request in middleware.ts instead, where a fresh nonce can be issued
+// per-request in src/proxy.ts (Next 16's middleware file) instead, where a
+// fresh nonce can be issued
 // and threaded through to those inline scripts.
 const securityHeaders = [
   { key: "X-Frame-Options", value: "DENY" },

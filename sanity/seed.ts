@@ -10,9 +10,15 @@
  *
  * `--with-user-token` uses your own logged-in Sanity CLI session to write —
  * no separate write-scoped token needs to be created or stored anywhere.
+ * Alternatively, set SANITY_SEED_TOKEN in .env.local to an editor-scoped
+ * token (used ONLY by this script, never by the app, never set on Vercel).
  * Safe to re-run: each org is upserted (createOrReplace) against a
  * deterministic _id, so running it twice just re-applies the same data
  * rather than creating duplicates.
+ *
+ * WARNING: once officers have edited organizations in Studio, re-running
+ * this script OVERWRITES their edits with the static data below. Never
+ * re-run after editor handoff — see HANDOFF.md.
  */
 import { createClient } from "@sanity/client";
 import { ORGANIZATIONS } from "../src/data/organizations";
@@ -30,7 +36,7 @@ const client = createClient({
   projectId,
   dataset,
   apiVersion: process.env.SANITY_API_VERSION ?? "2025-01-01",
-  token: process.env.SANITY_AUTH_TOKEN,
+  token: process.env.SANITY_SEED_TOKEN,
   useCdn: false,
 });
 
