@@ -39,7 +39,8 @@ describe("contactFormSchema", () => {
   });
 
   it("defaults the honeypot field to an empty string when absent", () => {
-    const { company: _company, ...withoutHoneypot } = validInput;
+    const withoutHoneypot: Record<string, unknown> = { ...validInput };
+    delete withoutHoneypot.company;
     const parsed = contactFormSchema.parse(withoutHoneypot);
     expect(parsed.company).toBe("");
   });

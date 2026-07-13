@@ -44,22 +44,38 @@ export const event = defineType({
       name: "startDateTime",
       title: "Start date & time",
       type: "datetime",
+      description:
+        "Bloomington local time. The site automatically files the event under Past once this time passes — no editing needed.",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "endDateTime",
       title: "End date & time",
       type: "datetime",
+      description: "Optional — leave blank if there's no firm end time.",
+      validation: (rule) =>
+        rule.custom((end, context) => {
+          const start = (
+            context.document as { startDateTime?: string } | undefined
+          )?.startDateTime;
+          if (!end || !start) return true;
+          return (
+            new Date(end) > new Date(start) ||
+            "End must be after the start time."
+          );
+        }),
     }),
     defineField({
       name: "location",
       title: "Location",
       type: "string",
+      description: 'e.g. "Neal-Marshall Black Culture Center".',
     }),
     defineField({
       name: "description",
       title: "Description",
       type: "blockContent",
+      description: "Optional details shown with the event.",
     }),
     defineField({
       name: "flyer",

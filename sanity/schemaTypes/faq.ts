@@ -9,18 +9,22 @@ export const faq = defineType({
       name: "question",
       title: "Question",
       type: "string",
+      description: "Write it the way a student would actually ask it.",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "answer",
       title: "Answer",
       type: "blockContent",
+      description:
+        "Keep it short and factual — link out to national or IU resources for detail.",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "category",
       title: "Category",
       type: "string",
+      description: "Controls how FAQs are grouped on the Resources page.",
       options: {
         list: [
           { title: "General", value: "general" },
@@ -35,6 +39,7 @@ export const faq = defineType({
       name: "order",
       title: "Display order",
       type: "number",
+      description: "Lower numbers appear first within a category.",
       initialValue: 0,
     }),
   ],

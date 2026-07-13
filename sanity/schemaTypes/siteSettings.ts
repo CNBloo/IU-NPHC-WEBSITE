@@ -25,16 +25,20 @@ export const siteSettings = defineType({
       name: "tagline",
       title: "Tagline",
       type: "string",
+      description: "Short line shown under the site name on the home page.",
     }),
     defineField({
       name: "missionStatement",
       title: "Mission statement",
       type: "blockContent",
+      description: "Shown in the mission section of the home page.",
     }),
     defineField({
       name: "heroImage",
       title: "Hero image",
       type: "image",
+      description:
+        "Large photo at the top of the home page. Only upload photos the council has permission to use.",
       fields: [
         defineField({
           name: "alt",
@@ -53,12 +57,29 @@ export const siteSettings = defineType({
           type: "object",
           name: "socialLink",
           fields: [
-            defineField({ name: "platform", type: "string", title: "Platform" }),
+            defineField({
+              name: "platform",
+              type: "string",
+              title: "Platform",
+              options: {
+                list: [
+                  "Instagram",
+                  "X (Twitter)",
+                  "Facebook",
+                  "TikTok",
+                  "LinkedIn",
+                  "YouTube",
+                  "Website",
+                ],
+              },
+              validation: (rule) => rule.required(),
+            }),
             defineField({
               name: "url",
               type: "url",
               title: "URL",
-              validation: (rule) => rule.uri({ scheme: ["http", "https"] }),
+              validation: (rule) =>
+                rule.required().uri({ scheme: ["https"] }),
             }),
           ],
         },
