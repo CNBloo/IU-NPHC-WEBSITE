@@ -1,6 +1,11 @@
 @import "tailwindcss";
 
 :root {
+  /* Single deliberate light theme: the cream/crimson brand was never designed
+     for dark surfaces, so color-scheme pins form controls and scrollbars to
+     light rendering instead of letting the OS half-invert them. */
+  color-scheme: light;
+
   /* IU Bloomington brand colors (official: crimson PMS 201C, cream PMS 663C) */
   --iu-crimson: #990000;
   --iu-cream: #eeedeb;
@@ -30,15 +35,6 @@
   --color-accent-foreground: var(--accent-foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #171717;
-    --foreground: var(--iu-cream);
-    --surface: #262220;
-    --surface-foreground: var(--iu-cream);
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

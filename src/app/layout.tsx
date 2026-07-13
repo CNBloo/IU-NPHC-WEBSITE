@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -19,6 +19,10 @@ export const metadata: Metadata = {
   title: "IU National Pan-Hellenic Council",
   description:
     "The IU National Pan-Hellenic Council unites the Divine Nine chapters at Indiana University Bloomington.",
+};
+
+export const viewport: Viewport = {
+  colorScheme: "light",
 };
 
 export default function RootLayout({
