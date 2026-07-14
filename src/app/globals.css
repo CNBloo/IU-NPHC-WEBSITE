@@ -54,8 +54,15 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
-/* Visible focus ring for keyboard navigation, on every focusable element */
+/* Visible focus ring for keyboard navigation, on every focusable element.
+   Two-part ring: the white inner ring keeps it visible on crimson surfaces
+   (header, buttons) and the crimson outer ring clears 3:1 against cream and
+   white — the old single gold ring failed non-text contrast on cream. The
+   transparent outline preserves a ring in Windows High Contrast Mode, where
+   box-shadow is stripped. */
 :focus-visible {
-  outline: 3px solid var(--iu-gold);
-  outline-offset: 2px;
+  outline: 3px solid transparent;
+  box-shadow:
+    0 0 0 2px #ffffff,
+    0 0 0 5px var(--iu-crimson);
 }

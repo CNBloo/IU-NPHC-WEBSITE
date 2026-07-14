@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About NPHC | IU National Pan-Hellenic Council",
+  title: "About NPHC",
   description:
     "Learn about the National Pan-Hellenic Council, its history at Indiana University Bloomington, and the values its member organizations share.",
 };

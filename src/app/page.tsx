@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { ButtonLink } from "@/components/ui/Button";
 import { EventCard } from "@/components/ui/EventCard";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -5,11 +6,32 @@ import { HeroCarousel } from "@/components/home/HeroCarousel";
 import { EVENTS } from "@/data/events";
 import { ORGANIZATIONS } from "@/data/organizations";
 import { splitUpcomingAndPast } from "@/lib/dates";
+import { SITE_URL } from "@/lib/site";
+
+export const metadata: Metadata = {
+  description:
+    "The IU National Pan-Hellenic Council unites the Divine Nine chapters at Indiana University Bloomington through scholarship, service, and community.",
+};
 
 // The upcoming split depends on the current time, so a purely static home
 // page would freeze it at build time; hourly revalidation keeps it honest
 // without giving up static serving.
 export const revalidate = 3600;
+
+// JSON-LD is inert data (never executed), so CSP script-src doesn't apply
+// and no nonce is needed — which keeps this page statically renderable.
+const ORG_JSON_LD = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "IU National Pan-Hellenic Council",
+  url: SITE_URL,
+  description:
+    "The National Pan-Hellenic Council at Indiana University Bloomington, uniting the campus chapters of the Divine Nine.",
+  parentOrganization: {
+    "@type": "CollegeOrUniversity",
+    name: "Indiana University Bloomington",
+  },
+}).replace(/</g, "\\u003c");
 
 export default function Home() {
   const { upcoming } = splitUpcomingAndPast(EVENTS);
@@ -17,6 +39,10 @@ export default function Home() {
 
   return (
     <div className="flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: ORG_JSON_LD }}
+      />
       <HeroCarousel className="h-[70vh] min-h-[560px]">
         <div className="flex flex-col items-center gap-6 px-4">
           <h1 className="max-w-3xl text-4xl font-bold tracking-tight text-white sm:text-6xl">

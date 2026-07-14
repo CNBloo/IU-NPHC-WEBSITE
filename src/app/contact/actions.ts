@@ -5,10 +5,16 @@ import { contactFormSchema, MIN_SUBMIT_SECONDS } from "@/lib/validation/contact"
 import { checkRateLimit } from "@/lib/rate-limit";
 import { getContactEnv } from "@/lib/env";
 
+type ContactField = "name" | "email" | "message";
+
 export type ContactFormState = {
   status: "idle" | "success" | "error";
   message?: string;
+  fieldErrors?: Partial<Record<ContactField, string>>;
 };
+
+const isContactField = (value: unknown): value is ContactField =>
+  value === "name" || value === "email" || value === "message";
 
 export async function submitContactForm(
   _prevState: ContactFormState,
@@ -17,9 +23,17 @@ export async function submitContactForm(
   const parsed = contactFormSchema.safeParse(Object.fromEntries(formData.entries()));
 
   if (!parsed.success) {
+    const fieldErrors: ContactFormState["fieldErrors"] = {};
+    for (const issue of parsed.error.issues) {
+      const field = issue.path[0];
+      if (isContactField(field) && !fieldErrors[field]) {
+        fieldErrors[field] = issue.message;
+      }
+    }
     return {
       status: "error",
-      message: parsed.error.issues[0]?.message ?? "Please check your input.",
+      message: "Please fix the highlighted fields below.",
+      fieldErrors,
     };
   }
 

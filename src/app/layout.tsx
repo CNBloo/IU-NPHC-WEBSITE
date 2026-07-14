@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { SkipLink } from "@/components/layout/SkipLink";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,9 +17,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "IU National Pan-Hellenic Council",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "IU National Pan-Hellenic Council",
+    template: "%s | IU National Pan-Hellenic Council",
+  },
   description:
     "The IU National Pan-Hellenic Council unites the Divine Nine chapters at Indiana University Bloomington.",
+  alternates: { canonical: "./" },
+  openGraph: {
+    type: "website",
+    siteName: "IU National Pan-Hellenic Council",
+    locale: "en_US",
+  },
+  twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {

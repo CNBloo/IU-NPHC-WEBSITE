@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ContactForm } from "@/components/contact/ContactForm";
 
 export const metadata: Metadata = {
-  title: "Contact | IU National Pan-Hellenic Council",
+  title: "Contact",
   description: "Get in touch with the IU National Pan-Hellenic Council.",
 };
 

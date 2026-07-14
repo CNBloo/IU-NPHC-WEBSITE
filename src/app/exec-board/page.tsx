@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { OFFICERS } from "@/data/officers";
 
 export const metadata: Metadata = {
-  title: "Executive Board | IU National Pan-Hellenic Council",
+  title: "Executive Board",
   description: "Meet the IU National Pan-Hellenic Council's executive board.",
 };
 
