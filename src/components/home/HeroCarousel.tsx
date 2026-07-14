@@ -66,6 +66,7 @@ export function HeroCarousel({
       {HERO_PHOTOS.map((photo, i) => (
         <div
           key={photo.id}
+          role="group"
           aria-hidden={i !== index}
           aria-roledescription="slide"
           aria-label={`${i + 1} of ${HERO_PHOTOS.length}: ${photo.caption}`}
@@ -121,7 +122,9 @@ export function HeroCarousel({
         <span aria-hidden="true">&#8250;</span>
       </button>
 
-      <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-3 rounded-full bg-black/30 px-3 py-1.5">
+      {/* Each control is a 24px+ hit target (WCAG 2.2 target size); the
+          visible dot is a smaller span inside the button. */}
+      <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-black/30 px-2 py-0.5">
         {HERO_PHOTOS.map((photo, i) => (
           <button
             key={photo.id}
@@ -129,17 +132,22 @@ export function HeroCarousel({
             onClick={() => goTo(i)}
             aria-label={`Go to slide ${i + 1}`}
             aria-current={i === index}
-            className={`h-2 w-2 rounded-full ${
-              i === index ? "bg-white" : "bg-white/40"
-            }`}
-          />
+            className="flex h-6 w-6 items-center justify-center"
+          >
+            <span
+              aria-hidden="true"
+              className={`h-2 w-2 rounded-full ${
+                i === index ? "bg-white" : "bg-white/40"
+              }`}
+            />
+          </button>
         ))}
         <button
           type="button"
           onClick={() => setIsManuallyPaused((p) => !p)}
           aria-pressed={isManuallyPaused}
           aria-label={isManuallyPaused ? "Play slideshow" : "Pause slideshow"}
-          className="ml-1 text-xs text-white"
+          className="ml-1 flex h-6 w-6 items-center justify-center text-xs text-white"
         >
           {isManuallyPaused ? "▶" : "❚❚"}
         </button>

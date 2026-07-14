@@ -7,10 +7,6 @@ import { splitUpcomingAndPast } from "@/lib/dates";
 import { EventCard } from "@/components/ui/EventCard";
 import { EmptyState } from "@/components/ui/EmptyState";
 
-// Chapter pages revalidate hourly so the related-events section keeps its
-// upcoming/past split honest (same reasoning as the home page).
-export const revalidate = 3600;
-
 export function generateStaticParams() {
   return ORGANIZATIONS.map((org) => ({ slug: org.slug }));
 }
@@ -74,7 +70,7 @@ export default async function OrganizationPage({
       />
 
       <header className="mt-6">
-        <p className="text-sm font-medium uppercase tracking-wide text-surface-foreground/60">
+        <p className="text-sm font-medium uppercase tracking-wide text-foreground/70">
           {org.chapterDesignation} Chapter at Indiana University Bloomington
         </p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">

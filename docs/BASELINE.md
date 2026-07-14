@@ -56,6 +56,7 @@ At baseline: `npm run typecheck` PASS, `npm run lint` PASS, `npm run build` PASS
 | 14 | Officer GROQ fetched `email`/`phone` unconditionally (gate was Studio-visibility only) | Gate enforced inside the GROQ projection too |
 | 15 | `/public` empty; all hero photos `src: null` | Blocked on real, consented photos from the council |
 | 16 | Rate-limit key (`x-forwarded-for`) is spoofable and collapses to a shared "unknown" bucket | Accepted for MVP (see decision 2) |
+| 17 | The nonce + `strict-dynamic` CSP blocked **every** script load on statically prerendered pages in production builds (static HTML has no nonce; `strict-dynamic` disables the `'self'` fallback) — no page with client components ever hydrated. Latent since Phase 1; only visible against `next build && next start` | All routes render at request time (`connection()` in the root layout), which a nonce CSP requires. Caught by the e2e console-error assertions |
 
 ## What is deliberately NOT tested
 
