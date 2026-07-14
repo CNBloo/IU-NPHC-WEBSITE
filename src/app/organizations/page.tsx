@@ -3,7 +3,7 @@ import { ORGANIZATIONS } from "@/data/organizations";
 import { OrgCard } from "@/components/ui/OrgCard";
 
 export const metadata: Metadata = {
-  title: "Member Organizations | IU National Pan-Hellenic Council",
+  title: "Member Organizations",
   description:
     "The Divine Nine chapters of the IU National Pan-Hellenic Council at Indiana University Bloomington.",
 };

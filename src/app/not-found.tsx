@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ButtonLink } from "@/components/ui/Button";
 
 export const metadata: Metadata = {
-  title: "Page Not Found | IU National Pan-Hellenic Council",
+  title: "Page Not Found",
 };
 
 export default function NotFound() {

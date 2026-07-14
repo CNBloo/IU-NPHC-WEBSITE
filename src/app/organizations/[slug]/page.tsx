@@ -24,7 +24,7 @@ export async function generateMetadata({
   const org = ORGANIZATIONS.find((o) => o.slug === slug);
   if (!org) return {};
   return {
-    title: `${org.orgName} | IU National Pan-Hellenic Council`,
+    title: org.orgName,
     description: `${org.orgName} — ${org.chapterDesignation} Chapter at Indiana University Bloomington, a member organization of the IU National Pan-Hellenic Council.`,
   };
 }

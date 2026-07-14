@@ -7,7 +7,7 @@ import { EventCard, EVENT_TYPE_LABELS } from "@/components/ui/EventCard";
 import { EmptyState } from "@/components/ui/EmptyState";
 
 export const metadata: Metadata = {
-  title: "Events | IU National Pan-Hellenic Council",
+  title: "Events",
   description:
     "Upcoming and past events from the IU National Pan-Hellenic Council and its member organizations.",
 };

@@ -7,7 +7,7 @@ export const dynamic = "force-static";
 // in manage.sanity.io can do anything here. noindex keeps the login screen
 // out of search results.
 export const metadata: Metadata = {
-  title: "Content Studio | IU NPHC",
+  title: "Content Studio",
   robots: { index: false, follow: false },
   referrer: "same-origin",
 };

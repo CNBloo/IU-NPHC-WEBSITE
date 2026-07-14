@@ -3,7 +3,7 @@ import Link from "next/link";
 import { FAQS } from "@/data/faqs";
 
 export const metadata: Metadata = {
-  title: "Resources | IU National Pan-Hellenic Council",
+  title: "Resources",
   description:
     "Interest meeting info, FAQs, the intake disclaimer, and campus resources for the IU National Pan-Hellenic Council.",
 };
