@@ -13,13 +13,8 @@ export const metadata: Metadata = {
     "The IU National Pan-Hellenic Council unites the Divine Nine chapters at Indiana University Bloomington through scholarship, service, and community.",
 };
 
-// The upcoming split depends on the current time, so a purely static home
-// page would freeze it at build time; hourly revalidation keeps it honest
-// without giving up static serving.
-export const revalidate = 3600;
-
 // JSON-LD is inert data (never executed), so CSP script-src doesn't apply
-// and no nonce is needed — which keeps this page statically renderable.
+// and no nonce is needed.
 const ORG_JSON_LD = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "Organization",
