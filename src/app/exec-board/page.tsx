@@ -13,9 +13,9 @@ export default function ExecBoardPage() {
         Executive Board
       </h1>
       <p className="mt-4 max-w-3xl text-foreground/80">
-        Board member names, photos, and bios will appear here once they&rsquo;re
-        added in the CMS. Contact info is only ever shown for officers who
-        have explicitly approved it for publication.
+        Photos and bios will appear here once they&rsquo;re added in the CMS.
+        Contact info is only ever shown for officers who have explicitly
+        approved it for publication.
       </p>
 
       <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -28,15 +28,15 @@ export default function ExecBoardPage() {
               className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-brand/10 text-2xl font-semibold text-brand"
               aria-hidden="true"
             >
-              {officer.position
+              {officer.name
                 .split(" ")
                 .map((word) => word[0])
                 .slice(0, 2)
                 .join("")}
             </div>
-            <h3 className="mt-4 text-lg font-semibold">{officer.position}</h3>
+            <h3 className="mt-4 text-lg font-semibold">{officer.name}</h3>
             <p className="mt-1 text-sm text-surface-foreground/60">
-              To be announced
+              {officer.position}
             </p>
           </div>
         ))}
