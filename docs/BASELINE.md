@@ -69,7 +69,8 @@ At baseline: `npm run typecheck` PASS, `npm run lint` PASS, `npm run build` PASS
 ## Content verification debts (officers, not code)
 
 - Official colors for the four orgs whose `colors[].source` is `"approximate"`.
-- Sigma Gamma Rho IU charter date (currently unknown/`null`).
+- ~~Sigma Gamma Rho IU charter date~~ — resolved 2026-07-14: October 18, 1971
+  (provided by Jose).
 - Kappa Alpha Psi return timeline (statusNote says anticipated 2027).
 - Exec board names/photos require written permission before `approvedForPublication`
   is ever checked.

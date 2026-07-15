@@ -83,7 +83,6 @@ reference — the CMS is the source of truth.
 
 - Official colors for Delta Sigma Theta, Sigma Gamma Rho, and Alpha Kappa
   Alpha (currently close approximations, labeled as such on chapter pages)
-- Sigma Gamma Rho's IU charter date (currently "not documented")
 - Kappa Alpha Psi's return timeline (status note says anticipated 2027)
 - Executive board names and photos — **written permission required** before
   publishing anyone's name, photo, email, or phone
