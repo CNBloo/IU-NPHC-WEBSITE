@@ -11,10 +11,13 @@ export type PlaceholderOfficer = {
 };
 
 export const OFFICERS: PlaceholderOfficer[] = [
-  { position: "Council President" },
+  { position: "President" },
   { position: "Vice President" },
+  { position: "Second Vice President" },
+  { position: "Parliamentarian" },
   { position: "Secretary" },
   { position: "Treasurer" },
-  { position: "Programming Chair" },
-  { position: "Public Relations Chair" },
+  { position: "Director of Academics" },
+  { position: "Director of Marketing" },
+  { position: "NPHC Liaison" },
 ];
