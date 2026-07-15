@@ -11,6 +11,21 @@ documented in [HANDOFF.md](./HANDOFF.md).
 Sanity project, Vercel deployment, and council-verified content. See
 [docs/BASELINE.md](./docs/BASELINE.md) for the audit trail.
 
+![Home page](./docs/screenshots/home.png)
+
+<details>
+<summary>More screenshots</summary>
+
+| Chapter detail | Organizations |
+|---|---|
+| ![Chapter detail page](./docs/screenshots/org-detail.png) | ![Organizations page](./docs/screenshots/organizations.png) |
+
+| Events | Executive board | Mobile |
+|---|---|---|
+| ![Events page](./docs/screenshots/events.png) | ![Executive board page](./docs/screenshots/exec-board.png) | ![Mobile home page](./docs/screenshots/mobile-home.png) |
+
+</details>
+
 ## Features
 
 - **Eight chapter pages** (`/organizations/[slug]`) with researched founding
