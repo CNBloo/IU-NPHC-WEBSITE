@@ -12,9 +12,10 @@
  * PDF isn't easily accessible publicly — swap these for exact values if a
  * chapter officer can get the real guide from national HQ.
  *
- * `iuChartered` is deliberately `null` where a specific charter date isn't
- * publicly documented anywhere findable (Sigma Gamma Rho's Epsilon Chi) —
- * left for a chapter officer to fill in rather than guessed at.
+ * Every org's `iuChartered` carries a short factual `note`. Sigma Gamma
+ * Rho's Epsilon Chi charter date was provided by Jose on 2026-07-14; the
+ * Omega Psi Phi, Sigma Gamma Rho, and Phi Beta Sigma notes draw on each
+ * org's own published principles/motto and chapter sites.
  */
 
 export type OrgColor = {
@@ -98,10 +99,16 @@ export const ORGANIZATIONS: Organization[] = [
     nationalFounded: {
       date: "November 17, 1911",
       location: "Howard University",
-      founders: ["Edgar Amos Love", "Oscar James Cooper", "Frank Coleman"],
+      founders: [
+        "Bishop Edgar Amos Love",
+        "Dr. Oscar James Cooper",
+        "Professor Frank Coleman",
+        "Dr. Ernest Everett Just",
+      ],
     },
     iuChartered: {
       date: "October 20, 1947",
+      note: "Zeta Epsilon upholds the fraternity’s four cardinal principles at IU: manhood, scholarship, perseverance, and uplift.",
     },
     officialSiteUrl: "https://oppf.org",
   },
@@ -127,7 +134,10 @@ export const ORGANIZATIONS: Organization[] = [
         "Dorothy Hanley Whiteside",
       ],
     },
-    iuChartered: null,
+    iuChartered: {
+      date: "October 18, 1971",
+      note: 'Epsilon Chi focuses on youth mentorship, community service, and uplifting women, guided by the sorority’s motto, "Greater Service, Greater Progress."',
+    },
     officialSiteUrl: "https://www.sgrho1922.org",
   },
   {
@@ -146,6 +156,7 @@ export const ORGANIZATIONS: Organization[] = [
     },
     iuChartered: {
       date: "January 3, 1972",
+      note: "The chapter supports Phi Beta Sigma’s national partnerships with the American Cancer Society and the March of Dimes.",
     },
     officialSiteUrl: "https://phibetasigma1914.org",
   },
