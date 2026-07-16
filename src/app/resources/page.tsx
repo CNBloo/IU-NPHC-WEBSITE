@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { FAQS } from "@/data/faqs";
+import { getFaqs } from "@/lib/sanity/queries";
+import { RichText } from "@/components/ui/RichText";
 
 export const metadata: Metadata = {
   title: "Resources",
@@ -28,7 +29,9 @@ const CAMPUS_RESOURCES = [
   },
 ];
 
-export default function ResourcesPage() {
+export default async function ResourcesPage() {
+  const faqs = await getFaqs();
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
       <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
@@ -68,9 +71,9 @@ export default function ResourcesPage() {
       <section className="mt-10">
         <h2 className="text-xl font-semibold">Frequently Asked Questions</h2>
         <div className="mt-4 space-y-3">
-          {FAQS.map((faq) => (
+          {faqs.map((faq) => (
             <details
-              key={faq.question}
+              key={faq._id}
               className="group rounded-lg border border-black/10 bg-surface p-4 text-surface-foreground"
             >
               <summary className="cursor-pointer list-none font-medium marker:content-none">
@@ -84,7 +87,10 @@ export default function ResourcesPage() {
                   </span>
                 </span>
               </summary>
-              <p className="mt-3 text-surface-foreground/80">{faq.answer}</p>
+              <RichText
+                value={faq.answer}
+                className="mt-3 text-surface-foreground/80 [&_p]:mt-2 [&_p:first-child]:mt-0"
+              />
             </details>
           ))}
         </div>

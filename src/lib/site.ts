@@ -4,4 +4,4 @@
  * production sets NEXT_PUBLIC_SITE_URL to the deployed domain.
  */
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";

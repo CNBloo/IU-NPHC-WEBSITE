@@ -1,14 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { EVENTS } from "@/data/events";
-import { ORGANIZATIONS } from "@/data/organizations";
+import {
+  getOrganizationBySlug,
+  getOrganizations,
+  getUpcomingEvents,
+} from "@/lib/sanity/queries";
 import { splitUpcomingAndPast } from "@/lib/dates";
 import { EventCard } from "@/components/ui/EventCard";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { RichText } from "@/components/ui/RichText";
 
-export function generateStaticParams() {
-  return ORGANIZATIONS.map((org) => ({ slug: org.slug }));
+export async function generateStaticParams() {
+  const organizations = await getOrganizations();
+  return organizations.map((org) => ({ slug: org.slug }));
 }
 
 export async function generateMetadata({
@@ -17,11 +22,11 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const org = ORGANIZATIONS.find((o) => o.slug === slug);
+  const org = await getOrganizationBySlug(slug);
   if (!org) return {};
   return {
-    title: org.orgName,
-    description: `${org.orgName} — ${org.chapterDesignation} Chapter at Indiana University Bloomington, a member organization of the IU National Pan-Hellenic Council.`,
+    title: org.name,
+    description: `${org.name} — ${org.chapterDesignation} Chapter at Indiana University Bloomington, a member organization of the IU National Pan-Hellenic Council.`,
   };
 }
 
@@ -31,16 +36,23 @@ export default async function OrganizationPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const orgIndex = ORGANIZATIONS.findIndex((o) => o.slug === slug);
-  if (orgIndex === -1) notFound();
+  const [org, organizations, allUpcoming] = await Promise.all([
+    getOrganizationBySlug(slug),
+    getOrganizations(),
+    getUpcomingEvents(),
+  ]);
+  if (!org) notFound();
 
-  const org = ORGANIZATIONS[orgIndex];
   const [primary, secondary] = org.colors;
-  const prev = ORGANIZATIONS[orgIndex - 1];
-  const next = ORGANIZATIONS[orgIndex + 1];
+  const orgIndex = organizations.findIndex((o) => o.slug === slug);
+  const prev = orgIndex > 0 ? organizations[orgIndex - 1] : undefined;
+  const next =
+    orgIndex >= 0 && orgIndex < organizations.length - 1
+      ? organizations[orgIndex + 1]
+      : undefined;
 
   const { upcoming } = splitUpcomingAndPast(
-    EVENTS.filter((event) => event.orgSlug === org.slug),
+    allUpcoming.filter((event) => event.organization?.slug === org.slug),
   );
 
   const hasApproximateColors = org.colors.some(
@@ -74,9 +86,16 @@ export default async function OrganizationPage({
           {org.chapterDesignation} Chapter at Indiana University Bloomington
         </p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-          {org.orgName}
+          {org.name}
         </h1>
       </header>
+
+      {org.description ? (
+        <RichText
+          value={org.description}
+          className="mt-4 max-w-3xl text-foreground/80 [&_h2]:mt-4 [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:mt-3 [&_h3]:text-lg [&_h3]:font-semibold [&_p]:mt-2"
+        />
+      ) : null}
 
       {org.status === "inactive" ? (
         <div className="mt-6 rounded-lg border border-accent bg-accent/15 p-4">
@@ -90,21 +109,26 @@ export default async function OrganizationPage({
       ) : null}
 
       <section className="mt-10 grid gap-6 sm:grid-cols-2">
-        <div className="rounded-lg border border-black/10 bg-surface p-6">
-          <h2 className="text-lg font-semibold text-surface-foreground">
-            National founding
-          </h2>
-          <p className="mt-2 text-sm text-surface-foreground/80">
-            Founded {org.nationalFounded.date} at{" "}
-            {org.nationalFounded.location}.
-          </p>
-        </div>
+        {org.nationalFounded?.date || org.nationalFounded?.location ? (
+          <div className="rounded-lg border border-black/10 bg-surface p-6">
+            <h2 className="text-lg font-semibold text-surface-foreground">
+              National founding
+            </h2>
+            <p className="mt-2 text-sm text-surface-foreground/80">
+              Founded {org.nationalFounded.date}
+              {org.nationalFounded.location
+                ? ` at ${org.nationalFounded.location}`
+                : ""}
+              .
+            </p>
+          </div>
+        ) : null}
 
         <div className="rounded-lg border border-black/10 bg-surface p-6">
           <h2 className="text-lg font-semibold text-surface-foreground">
             {org.chapterDesignation} Chapter at IU
           </h2>
-          {org.iuChartered ? (
+          {org.iuChartered?.date ? (
             <p className="mt-2 text-sm text-surface-foreground/80">
               Chartered {org.iuChartered.date}.{" "}
               {org.iuChartered.note ?? ""}
@@ -141,29 +165,33 @@ export default async function OrganizationPage({
           ) : null}
         </div>
 
-        <div className="rounded-lg border border-black/10 bg-surface p-6">
-          <h2 className="text-lg font-semibold text-surface-foreground">
-            Learn more
-          </h2>
-          <a
-            href={org.officialSiteUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-2 inline-block text-sm font-medium text-brand underline"
-          >
-            Official national website ↗
-          </a>
-        </div>
+        {org.officialSiteUrl ? (
+          <div className="rounded-lg border border-black/10 bg-surface p-6">
+            <h2 className="text-lg font-semibold text-surface-foreground">
+              Learn more
+            </h2>
+            <a
+              href={org.officialSiteUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-block text-sm font-medium text-brand underline"
+            >
+              Official national website ↗
+            </a>
+          </div>
+        ) : null}
       </section>
 
-      <section className="mt-10">
-        <h2 className="text-xl font-semibold text-foreground">
-          National founders
-        </h2>
-        <p className="mt-3 text-sm leading-relaxed text-foreground/80">
-          {org.nationalFounded.founders.join(" · ")}
-        </p>
-      </section>
+      {org.nationalFounded?.founders && org.nationalFounded.founders.length > 0 ? (
+        <section className="mt-10">
+          <h2 className="text-xl font-semibold text-foreground">
+            National founders
+          </h2>
+          <p className="mt-3 text-sm leading-relaxed text-foreground/80">
+            {org.nationalFounded.founders.join(" · ")}
+          </p>
+        </section>
+      ) : null}
 
       <section className="mt-10">
         <h2 className="text-xl font-semibold text-foreground">
@@ -179,7 +207,7 @@ export default async function OrganizationPage({
           <ul className="mt-4 space-y-4">
             {upcoming.map((event) => (
               <li key={event.slug}>
-                <EventCard event={event} orgName={org.orgName} />
+                <EventCard event={event} orgName={org.name} />
               </li>
             ))}
           </ul>
@@ -195,7 +223,7 @@ export default async function OrganizationPage({
             href={`/organizations/${prev.slug}`}
             className="font-medium text-brand underline"
           >
-            &larr; {prev.orgName}
+            &larr; {prev.name}
           </Link>
         ) : (
           <span />
@@ -205,7 +233,7 @@ export default async function OrganizationPage({
             href={`/organizations/${next.slug}`}
             className="text-right font-medium text-brand underline"
           >
-            {next.orgName} &rarr;
+            {next.name} &rarr;
           </Link>
         ) : (
           <span />

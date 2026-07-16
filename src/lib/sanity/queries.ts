@@ -96,6 +96,14 @@ export async function getPastEvents(): Promise<EventDoc[]> {
   );
 }
 
+export async function getEventBySlug(slug: string): Promise<EventDoc | null> {
+  return sanityClient().fetch(
+    `*[_type == "event" && slug.current == $slug][0] ${eventProjection}`,
+    { slug },
+    { next: { tags: ["event"] } },
+  );
+}
+
 export async function getFaqs(): Promise<Faq[]> {
   return sanityClient().fetch(
     `*[_type == "faq"] | order(category asc, order asc)`,

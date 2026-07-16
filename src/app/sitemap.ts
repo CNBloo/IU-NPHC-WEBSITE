@@ -1,8 +1,10 @@
 import type { MetadataRoute } from "next";
-import { ORGANIZATIONS } from "@/data/organizations";
+import { getOrganizations } from "@/lib/sanity/queries";
 import { SITE_URL } from "@/lib/site";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const organizations = await getOrganizations();
+
   const staticRoutes = [
     "",
     "/about",
@@ -17,7 +19,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: path === "" ? 1 : 0.7,
   }));
 
-  const orgRoutes = ORGANIZATIONS.map((org) => ({
+  const orgRoutes = organizations.map((org) => ({
     url: `${SITE_URL}/organizations/${org.slug}`,
     changeFrequency: "monthly" as const,
     priority: 0.6,

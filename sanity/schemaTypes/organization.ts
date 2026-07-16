@@ -68,6 +68,19 @@ export const organization = defineType({
                   .required()
                   .regex(/^#([0-9a-fA-F]{6})$/, { name: "hex color" }),
             }),
+            defineField({
+              name: "source",
+              title: "Source",
+              type: "string",
+              description:
+                "Official: confirmed against the org's own brand guide. Approximate: closest known equivalent, pending confirmation.",
+              options: {
+                list: [
+                  { title: "Official", value: "official" },
+                  { title: "Approximate", value: "approximate" },
+                ],
+              },
+            }),
           ],
           preview: {
             select: { title: "label", subtitle: "hex" },

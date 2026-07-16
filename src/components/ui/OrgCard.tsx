@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Organization } from "@/data/organizations";
+import type { Organization } from "@/lib/sanity/types";
 
 /**
  * Listing card for an organization — the whole card is one link to the
@@ -30,7 +30,7 @@ export function OrgCard({ org }: { org: Organization }) {
               <p className="text-sm font-medium text-surface-foreground/60">
                 {org.chapterDesignation} Chapter
               </p>
-              <h3 className="mt-1 text-lg font-semibold">{org.orgName}</h3>
+              <h3 className="mt-1 text-lg font-semibold">{org.name}</h3>
             </div>
 
             {org.status === "inactive" ? (
@@ -61,9 +61,12 @@ export function OrgCard({ org }: { org: Organization }) {
             ))}
           </div>
 
-          <p className="mt-4 text-sm text-surface-foreground/70">
-            Founded {org.nationalFounded.date} at {org.nationalFounded.location}
-          </p>
+          {org.nationalFounded?.date && org.nationalFounded?.location ? (
+            <p className="mt-4 text-sm text-surface-foreground/70">
+              Founded {org.nationalFounded.date} at{" "}
+              {org.nationalFounded.location}
+            </p>
+          ) : null}
 
           <p className="mt-4 text-sm font-medium text-brand underline decoration-dotted underline-offset-2">
             Chapter details
