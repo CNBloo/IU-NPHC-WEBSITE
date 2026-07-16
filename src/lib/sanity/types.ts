@@ -2,7 +2,11 @@ import type { Image, PortableTextBlock } from "sanity";
 
 export type SanityImageWithAlt = Image & { alt: string };
 
-export type OrgColor = { label: string; hex: string };
+export type OrgColor = {
+  label: string;
+  hex: string;
+  source?: "official" | "approximate";
+};
 
 export type SocialLink = { platform: string; url: string };
 
@@ -35,7 +39,7 @@ export type Officer = {
   name: string;
   position: string;
   organization?: { name: string; slug: string };
-  photo: SanityImageWithAlt;
+  photo?: SanityImageWithAlt;
   bio?: PortableTextBlock[];
   approvedForPublication: boolean;
   email?: string;

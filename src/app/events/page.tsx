@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { EVENTS } from "@/data/events";
-import { ORGANIZATIONS } from "@/data/organizations";
-import { splitUpcomingAndPast } from "@/lib/dates";
+import {
+  getOrganizations,
+  getPastEvents,
+  getUpcomingEvents,
+} from "@/lib/sanity/queries";
 import { EventCard, EVENT_TYPE_LABELS } from "@/components/ui/EventCard";
 import { EmptyState } from "@/components/ui/EmptyState";
 
@@ -11,9 +13,6 @@ export const metadata: Metadata = {
   description:
     "Upcoming and past events from the IU National Pan-Hellenic Council and its member organizations.",
 };
-
-const orgName = (slug: string | null) =>
-  ORGANIZATIONS.find((o) => o.slug === slug)?.orgName ?? null;
 
 export default async function EventsPage({
   searchParams,
@@ -25,13 +24,20 @@ export default async function EventsPage({
     (org && org !== "all") || (type && type !== "all"),
   );
 
-  const filtered = EVENTS.filter((event) => {
-    if (org && org !== "all" && event.orgSlug !== org) return false;
+  const [organizations, upcomingAll, pastAll] = await Promise.all([
+    getOrganizations(),
+    getUpcomingEvents(),
+    getPastEvents(),
+  ]);
+
+  const matchesFilters = (event: { organization?: { slug: string }; eventType: string }) => {
+    if (org && org !== "all" && event.organization?.slug !== org) return false;
     if (type && type !== "all" && event.eventType !== type) return false;
     return true;
-  });
+  };
 
-  const { upcoming, past } = splitUpcomingAndPast(filtered);
+  const upcoming = upcomingAll.filter(matchesFilters);
+  const past = pastAll.filter(matchesFilters);
 
   // Event structured data for search engines — upcoming events only. The
   // strict CSP applies to every script tag, so this one carries the
@@ -46,7 +52,7 @@ export default async function EventsPage({
       location: { "@type": "Place", name: event.location },
       organizer: {
         "@type": "Organization",
-        name: orgName(event.orgSlug) ?? "IU National Pan-Hellenic Council",
+        name: event.organization?.name ?? "IU National Pan-Hellenic Council",
       },
     })),
   ).replace(/</g, "\\u003c");
@@ -86,9 +92,9 @@ export default async function EventsPage({
             className="mt-1 rounded-md border border-black/20 bg-white px-3 py-2 text-sm text-surface-foreground"
           >
             <option value="all">All organizations</option>
-            {ORGANIZATIONS.map((o) => (
+            {organizations.map((o) => (
               <option key={o.slug} value={o.slug}>
-                {o.chapterDesignation} — {o.orgName}
+                {o.chapterDesignation} — {o.name}
               </option>
             ))}
           </select>
@@ -146,7 +152,7 @@ export default async function EventsPage({
           <ul className="mt-4 space-y-4">
             {upcoming.map((event) => (
               <li key={event.slug}>
-                <EventCard event={event} orgName={orgName(event.orgSlug)} />
+                <EventCard event={event} orgName={event.organization?.name ?? null} />
               </li>
             ))}
           </ul>
@@ -171,7 +177,7 @@ export default async function EventsPage({
               <li key={event.slug}>
                 <EventCard
                   event={event}
-                  orgName={orgName(event.orgSlug)}
+                  orgName={event.organization?.name ?? null}
                   past
                 />
               </li>

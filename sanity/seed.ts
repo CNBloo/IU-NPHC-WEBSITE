@@ -55,6 +55,7 @@ async function seed() {
         _key: c.label.toLowerCase().replace(/\s+/g, "-"),
         label: c.label,
         hex: c.hex,
+        source: c.source,
       })),
       nationalFounded: {
         _type: "object",

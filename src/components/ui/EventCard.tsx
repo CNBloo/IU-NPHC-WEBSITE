@@ -1,7 +1,7 @@
-import type { EventType, PlaceholderEvent } from "@/data/events";
+import type { EventDoc } from "@/lib/sanity/types";
 import { formatEventDateTime } from "@/lib/dates";
 
-export const EVENT_TYPE_LABELS: Record<EventType, string> = {
+export const EVENT_TYPE_LABELS: Record<EventDoc["eventType"], string> = {
   intake: "Intake",
   social: "Social",
   service: "Service",
@@ -10,7 +10,7 @@ export const EVENT_TYPE_LABELS: Record<EventType, string> = {
 };
 
 type EventCardProps = {
-  event: PlaceholderEvent;
+  event: EventDoc;
   /** Display name of the hosting org; null renders as council-wide. */
   orgName: string | null;
   /** Past events render dimmed, without a calendar link. */
@@ -38,7 +38,8 @@ export function EventCard({ event, orgName, past = false }: EventCardProps) {
         {event.title}
       </h3>
       <p className="mt-1 text-sm text-surface-foreground/70">
-        {formatEventDateTime(event.startDateTime)} &middot; {event.location}
+        {formatEventDateTime(event.startDateTime)}
+        {event.location ? <> &middot; {event.location}</> : null}
       </p>
       {past ? (
         <p className="mt-2 text-sm italic text-surface-foreground/60">

@@ -3,9 +3,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { EventCard } from "@/components/ui/EventCard";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { HeroCarousel } from "@/components/home/HeroCarousel";
-import { EVENTS } from "@/data/events";
-import { ORGANIZATIONS } from "@/data/organizations";
-import { splitUpcomingAndPast } from "@/lib/dates";
+import { getUpcomingEvents } from "@/lib/sanity/queries";
 import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -28,9 +26,8 @@ const ORG_JSON_LD = JSON.stringify({
   },
 }).replace(/</g, "\\u003c");
 
-export default function Home() {
-  const { upcoming } = splitUpcomingAndPast(EVENTS);
-  const nextThree = upcoming.slice(0, 3);
+export default async function Home() {
+  const nextThree = await getUpcomingEvents(3);
 
   return (
     <div className="flex flex-col">
@@ -87,10 +84,7 @@ export default function Home() {
                 <EventCard
                   key={event.slug}
                   event={event}
-                  orgName={
-                    ORGANIZATIONS.find((o) => o.slug === event.orgSlug)
-                      ?.orgName ?? null
-                  }
+                  orgName={event.organization?.name ?? null}
                 />
               ))}
             </div>

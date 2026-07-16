@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ORGANIZATIONS } from "@/data/organizations";
+import { getOrganizations } from "@/lib/sanity/queries";
 import { OrgCard } from "@/components/ui/OrgCard";
 
 export const metadata: Metadata = {
@@ -8,7 +8,9 @@ export const metadata: Metadata = {
     "The Divine Nine chapters of the IU National Pan-Hellenic Council at Indiana University Bloomington.",
 };
 
-export default function OrganizationsPage() {
+export default async function OrganizationsPage() {
+  const organizations = await getOrganizations();
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
       <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
@@ -25,7 +27,7 @@ export default function OrganizationsPage() {
       </p>
 
       <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {ORGANIZATIONS.map((org) => (
+        {organizations.map((org) => (
           <OrgCard key={org.slug} org={org} />
         ))}
       </div>

@@ -29,6 +29,8 @@ export const officer = defineType({
       name: "photo",
       title: "Photo",
       type: "image",
+      description:
+        "Optional — leave blank until the officer has given written consent to publish their photo.",
       fields: [
         defineField({
           name: "alt",
@@ -37,7 +39,6 @@ export const officer = defineType({
           validation: (rule) => rule.required(),
         }),
       ],
-      validation: (rule) => rule.required(),
     }),
     defineField({
       name: "bio",
