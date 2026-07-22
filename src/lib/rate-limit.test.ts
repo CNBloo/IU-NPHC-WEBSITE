@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { checkRateLimit } from "./rate-limit";
+import { _bucketCount, checkRateLimit } from "./rate-limit";
 
 // The bucket map is module-level state shared across tests, so every test
 // uses its own key and the clock is faked to control window expiry.
@@ -55,5 +55,18 @@ describe("checkRateLimit", () => {
     for (let i = 0; i < 6; i++) checkRateLimit(throttled);
     expect(checkRateLimit(throttled).allowed).toBe(false);
     expect(checkRateLimit(other).allowed).toBe(true);
+  });
+
+  it("sweeps expired buckets once the map hits the size threshold, bounding memory growth", () => {
+    // Earlier tests in this file leave residual buckets behind (shared
+    // module state), so assert on growth/shrinkage rather than exact counts.
+    for (let i = 0; i < 600; i++) checkRateLimit(uniqueKey());
+    const grown = _bucketCount();
+    expect(grown).toBeGreaterThanOrEqual(500);
+
+    vi.advanceTimersByTime(60_001);
+    checkRateLimit(uniqueKey());
+
+    expect(_bucketCount()).toBeLessThan(grown);
   });
 });
