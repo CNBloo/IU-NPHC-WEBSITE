@@ -9,15 +9,38 @@
  */
 const WINDOW_MS = 60_000;
 const MAX_REQUESTS_PER_WINDOW = 5;
+// Every unique IP that hits this (including one-off bots/scanners) leaves a
+// bucket behind until it happens to reset. Without a bound, a public form
+// endpoint can grow this map indefinitely for the life of the instance.
+// Cheap fix: once it gets big, sweep out anything already expired.
+const SWEEP_THRESHOLD = 500;
 
 type Bucket = { count: number; resetAt: number };
 const buckets = new Map<string, Bucket>();
+
+function sweepExpired(now: number): void {
+  for (const [key, bucket] of buckets) {
+    if (now >= bucket.resetAt) {
+      buckets.delete(key);
+    }
+  }
+}
+
+/** Test-only escape hatch to observe map size without exporting the map itself. */
+export function _bucketCount(): number {
+  return buckets.size;
+}
 
 export function checkRateLimit(key: string): {
   allowed: boolean;
   retryAfterSeconds?: number;
 } {
   const now = Date.now();
+
+  if (buckets.size >= SWEEP_THRESHOLD) {
+    sweepExpired(now);
+  }
+
   const bucket = buckets.get(key);
 
   if (!bucket || now >= bucket.resetAt) {
