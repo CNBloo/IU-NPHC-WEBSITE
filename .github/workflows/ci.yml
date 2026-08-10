@@ -5,6 +5,11 @@ on:
   push:
     branches: [main]
 
+env:
+  NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_SANITY_PROJECT_ID }}
+  SANITY_READ_TOKEN: ${{ secrets.SANITY_READ_TOKEN }}
+  SANITY_REVALIDATE_SECRET: ${{ secrets.SANITY_REVALIDATE_SECRET }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
