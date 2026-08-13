@@ -1,5 +1,40 @@
 import { expect, test } from "@playwright/test";
 
+type UpcomingEventFixture = {
+  slug: string;
+  title: string;
+  orgSlug: string | null;
+};
+
+/**
+ * Reads upcoming events straight from Sanity instead of the app, since these
+ * tests need to know what's *actually* live before asserting against it.
+ * Events are real content officers manage every semester — hardcoding a
+ * specific title/slug here would break the suite the next time someone
+ * edits the calendar, so the two tests below discover fixtures at run time.
+ */
+async function fetchUpcomingEvents(): Promise<UpcomingEventFixture[]> {
+  const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+  const token = process.env.SANITY_READ_TOKEN;
+  if (!projectId || !token) return [];
+
+  const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production";
+  const apiVersion = process.env.SANITY_API_VERSION ?? "2025-01-01";
+  const query = encodeURIComponent(
+    `*[_type == "event" && startDateTime >= now()]{ "slug": slug.current, title, "orgSlug": organization->slug.current }`,
+  );
+  const response = await fetch(
+    `https://${projectId}.api.sanity.io/v${apiVersion}/data/query/${dataset}?query=${query}`,
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  if (!response.ok) return [];
+
+  const { result } = (await response.json()) as {
+    result: UpcomingEventFixture[];
+  };
+  return result;
+}
+
 const ROUTES: Array<{ path: string; h1: RegExp }> = [
   { path: "/", h1: /IU National Pan-Hellenic Council/ },
   { path: "/about", h1: /About NPHC/ },
@@ -53,9 +88,13 @@ test("inactive chapter shows its status callout", async ({ page }) => {
 });
 
 test("event calendar download serves an ics file", async ({ request }) => {
-  const response = await request.get(
-    "/events/fall-kickoff-interest-meeting/calendar",
+  const events = await fetchUpcomingEvents();
+  test.skip(
+    events.length === 0,
+    "No upcoming events in the dataset to test a calendar download against.",
   );
+
+  const response = await request.get(`/events/${events[0].slug}/calendar`);
   expect(response.status()).toBe(200);
   expect(response.headers()["content-type"]).toContain("text/calendar");
   const body = await response.text();
@@ -73,11 +112,23 @@ test("sitemap and robots respond", async ({ request }) => {
 });
 
 test("event filtering by organization narrows the list", async ({ page }) => {
-  await page.goto("/events?org=omega-psi-phi");
-  await expect(
-    page.getByRole("heading", { name: "Step Show Showcase" }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "MLK Day of Service" }),
-  ).not.toBeVisible();
+  const events = await fetchUpcomingEvents();
+  const target = events.find((event) => event.orgSlug);
+  test.skip(
+    !target,
+    "No upcoming event with an organization set to test filtering against.",
+  );
+  const { slug: targetSlug, title, orgSlug } = target!;
+
+  await page.goto(`/events?org=${orgSlug}`);
+  await expect(page.getByRole("heading", { name: title })).toBeVisible();
+
+  // Any org the target event doesn't belong to should filter it out —
+  // falls back to a slug that can't match if every event shares one org.
+  const otherOrgSlug =
+    events.find(
+      (event) => event.orgSlug && event.orgSlug !== orgSlug && event.slug !== targetSlug,
+    )?.orgSlug ?? "not-a-real-org-slug";
+  await page.goto(`/events?org=${otherOrgSlug}`);
+  await expect(page.getByRole("heading", { name: title })).not.toBeVisible();
 });
